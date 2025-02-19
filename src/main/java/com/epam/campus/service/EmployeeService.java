@@ -3,11 +3,11 @@ package com.epam.campus.service;
 import com.epam.campus.db.EmployeeRepository;
 import com.epam.campus.db.Employee;
 import java.util.Map;
-import java.util.Scanner;
+import org.springframework.stereotype.Service;
 
+@Service
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
-    Scanner scanner=new Scanner(System.in);
     public EmployeeService(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }

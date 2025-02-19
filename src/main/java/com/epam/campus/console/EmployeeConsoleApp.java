@@ -1,61 +1,67 @@
 package com.epam.campus.console;
 
-import com.epam.campus.db.EmployeeRepository;
+import com.epam.campus.config.AppConfig;
 import com.epam.campus.db.Employee;
 import com.epam.campus.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import java.util.Map;
 import java.util.Scanner;
 
 public class EmployeeConsoleApp {
     private static final Scanner sc = new Scanner(System.in);
     private static final Logger logger = LoggerFactory.getLogger(EmployeeConsoleApp.class);
-    private static final EmployeeService employeeService = new EmployeeService(new EmployeeRepository());
 
     public static void main(String[] args) {
-        while (true) {
-            logger.info("1. Create Employee");
-            logger.info("2. Update Employee");
-            logger.info("3. Delete Employee");
-            logger.info("4. Read Employee");
-            logger.info("5. Read All Employees");
-            logger.info("6. Generate Payroll by Department");
-            logger.info("7. Exit");
-            System.out.print("Enter choice: ");
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class)) {
+            EmployeeService employeeService = context.getBean(EmployeeService.class);
 
-            int choice = sc.nextInt();
-            sc.nextLine();
-            if(choice == 7){
-                logger.info("Exiting application.");
-                break;
-            }
-            switch (choice) {
-                case 1 :
-                    createEmployee();
-                    break;
-                case 2 :
-                    updateEmployee();
-                    break;
-                case 3 :
-                    deleteEmployee();
-                    break;
-                case 4 :readEmployee();
-                    break;
-                case 5 :
-                    readAllEmployees();
-                    break;
-                case 6 :
-                    generatePayroll();
-                    break;
-                default :
-                    logger.warn("Invalid choice, try again.");
-            }
+            while (true) {
+                logger.info("1. Create Employee");
+                logger.info("2. Update Employee");
+                logger.info("3. Delete Employee");
+                logger.info("4. Read Employee");
+                logger.info("5. Read All Employees");
+                logger.info("6. Generate Payroll by Department");
+                logger.info("7. Exit");
+                System.out.print("Enter choice: ");
 
+                int choice = sc.nextInt();
+                sc.nextLine();
+                if (choice == 7) {
+                    logger.info("Exiting application.");
+                    break;
+                }
+                switch (choice) {
+                    case 1:
+                        createEmployee(employeeService);
+                        break;
+                    case 2:
+                        updateEmployee(employeeService);
+                        break;
+                    case 3:
+                        deleteEmployee(employeeService);
+                        break;
+                    case 4:
+                        readEmployee(employeeService);
+                        break;
+                    case 5:
+                        readAllEmployees(employeeService);
+                        break;
+                    case 6:
+                        generatePayroll(employeeService);
+                        break;
+                    default:
+                        logger.warn("Invalid choice, try again.");
+                }
+
+            }
         }
     }
 
-    private static void createEmployee() {
+    private static void createEmployee(EmployeeService employeeService) {
         String employeeId;
         do {
             System.out.print("Enter Employee ID: ");
@@ -79,7 +85,7 @@ public class EmployeeConsoleApp {
         logger.info("Employee created successfully");
     }
 
-    private static void updateEmployee() {
+    private static void updateEmployee(EmployeeService employeeService) {
         System.out.print("Enter Employee ID to update: ");
         String employeeId = sc.nextLine();
         Employee existingEmployee = employeeService.readEmployee(employeeId);
@@ -111,7 +117,7 @@ public class EmployeeConsoleApp {
         }
     }
 
-    private static void deleteEmployee() {
+    private static void deleteEmployee(EmployeeService employeeService) {
         System.out.print("Enter Employee ID to delete: ");
         String employeeId = sc.nextLine();
         boolean success = employeeService.deleteEmployee(employeeId);
@@ -123,7 +129,7 @@ public class EmployeeConsoleApp {
         }
     }
 
-    private static void readEmployee() {
+    private static void readEmployee(EmployeeService employeeService) {
         System.out.print("Enter Employee ID to view details: ");
         String employeeId = sc.nextLine();
         Employee employee = employeeService.readEmployee(employeeId);
@@ -135,7 +141,7 @@ public class EmployeeConsoleApp {
         }
     }
 
-    private static void readAllEmployees() {
+    private static void readAllEmployees(EmployeeService employeeService) {
         Map<String, Employee> employees = employeeService.getAllEmployees();
         if (employees.isEmpty()) {
             logger.warn("No employees found.");
@@ -147,7 +153,7 @@ public class EmployeeConsoleApp {
         }
     }
 
-    private static void generatePayroll() {
+    private static void generatePayroll(EmployeeService employeeService) {
         System.out.print("Enter Department: ");
         String department = sc.nextLine();
         double payroll = employeeService.generatePayrollByDepartment(department);

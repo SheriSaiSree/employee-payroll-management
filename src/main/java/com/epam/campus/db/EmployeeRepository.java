@@ -1,7 +1,9 @@
 package com.epam.campus.db;
 
+import org.springframework.stereotype.Repository;
 import java.util.*;
 
+@Repository
 public class EmployeeRepository {
     Scanner scanner =new Scanner(System.in);
     private final Map<String, Employee> employeeDatabase = new HashMap<>();
